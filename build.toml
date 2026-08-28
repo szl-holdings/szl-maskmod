@@ -1,6 +1,13 @@
 [general]
 name = "szl_maskmod"
+version = 1
+edition = 5
+license = "Apache-2.0"
+backends = ["cpu", "cuda"]
 hub = "SZLHOLDINGS/szl-maskmod"
+
+[general.hub]
+repo-id = "SZLHOLDINGS/szl-maskmod"
 
 [torch-noarch]
 src = "torch-ext/szl_maskmod"

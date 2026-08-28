@@ -1,0 +1,13 @@
+[project]
+name = "szl-maskmod"
+version = "0.1.0"
+description = "Original SZL score_mod + block-mask attention with receipts."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.9"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "kernels_ci: short correctness tests for kernel CI",
+]
