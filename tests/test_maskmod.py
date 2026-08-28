@@ -1,9 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "torch-ext"))
+
+import pytest
 import torch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "torch-ext"))
 from szl_maskmod import maskmod_attn, ReceiptChain, selfcheck
+
+pytestmark = pytest.mark.kernels_ci
 
 def test_causal_matches_sdpa():
     torch.manual_seed(1)
