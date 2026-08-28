@@ -1,2 +1,13 @@
 # szl-maskmod
-Original SZL Triton score_mod + block-sparse mask attention with receipts. FlexAttention silhouette, not a rehost. Doctrine v11, Apache-2.0.
+
+Canonical GitHub source for `SZLHOLDINGS/szl-maskmod`.
+
+```python
+from szl_maskmod import maskmod_attn, ReceiptChain, selfcheck
+import torch
+q = k = v = torch.randn(1, 2, 8, 16)
+y = maskmod_attn(q, k, v, causal=True)
+print(selfcheck())
+```
+
+Not a FlexAttention rehost. No CUDA benches. Λ = Conjecture 1.

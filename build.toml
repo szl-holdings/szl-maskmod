@@ -1,0 +1,6 @@
+[general]
+name = "szl_maskmod"
+hub = "SZLHOLDINGS/szl-maskmod"
+
+[torch-noarch]
+src = "torch-ext/szl_maskmod"
