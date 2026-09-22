@@ -1,0 +1,15 @@
+{
+  "$comment": "SZL Holdings GitHub -> Hugging Face mirror map. Org casing is literal: SZLHOLDINGS.",
+  "targets": [
+    {
+      "slug": "maskmod",
+      "hf_repo_id": "SZLHOLDINGS/szl-maskmod",
+      "repo_type": "model",
+      "subdirectory": ".",
+      "card_template": "",
+      "mirror_on_push": false,
+      "$why_no_push_lane": "hub-sync propagates deletions. This Hub repo holds torch-ext/, bom/ and the measured bench/operational receipts, none of which exist in the GitHub tree. Release-only and additive; the card is loaded from the Hub.",
+      "hub_only_paths": ["torch-ext/","bom/","tests/","BENCH.laptop-blackwell.json","OPERATIONAL.json","build.toml","maskmod.py","og-card.png"]
+    }
+  ]
+}
