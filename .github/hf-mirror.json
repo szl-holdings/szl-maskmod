@@ -1,15 +1,59 @@
 {
-  "$comment": "SZL Holdings GitHub -> Hugging Face mirror map. Org casing is literal: SZLHOLDINGS.",
+  "$comment": "SZL Holdings GitHub -> Hugging Face mirror map. Consumed by .github/workflows/hf-mirror.yml and scripts/hf_mirror_release.py. Org casing is literal: SZLHOLDINGS. Schema ported from szl-holdings/szl-lambda-gate@29a0bd9149bac28bb21e0ff4cf017dfb09a9805a; replace_hub_paths is the one addition.",
   "targets": [
     {
       "slug": "maskmod",
       "hf_repo_id": "SZLHOLDINGS/szl-maskmod",
+      "oidc_resource": "SZLHOLDINGS/szl-maskmod",
       "repo_type": "model",
       "subdirectory": ".",
       "card_template": "",
       "mirror_on_push": false,
-      "$why_no_push_lane": "hub-sync propagates deletions. This Hub repo holds torch-ext/, bom/ and the measured bench/operational receipts, none of which exist in the GitHub tree. Release-only and additive; the card is loaded from the Hub.",
-      "hub_only_paths": ["torch-ext/","bom/","tests/","BENCH.laptop-blackwell.json","OPERATIONAL.json","build.toml","maskmod.py","og-card.png"]
+      "preserve_hub_card": true,
+      "required_card_metadata": {
+        "library_name": "kernels",
+        "license": "apache-2.0"
+      },
+      "required_card_tags": [],
+      "$why_no_card_tags": "The live Hub card at main 654a01aaaf86d06471f019cf2f84305703ccc260 (read 2026-09-25) declares no tags and no doi: tag, so none is required. The publisher still requires the rendered front matter to equal the Hub baseline exactly.",
+      "preserve_hub_paths": [
+        ".gitattributes",
+        "BENCH.laptop-blackwell.json",
+        "LICENSE",
+        "OPERATIONAL.json",
+        "bom/model-bom.cdx.json",
+        "maskmod.py",
+        "og-card.png",
+        "tests/test_maskmod.py"
+      ],
+      "$why_preserve": "Every Hub file the release must never overwrite: the seven Hub-only files, plus LICENSE, whose Hub bytes (553 B Apache-2.0 notice) differ from the GitHub full text (11358 B). LICENSE is preserved exactly as the lambda-gate proof did; moving it to replace_hub_paths is an owner decision.",
+      "replace_hub_paths": [
+        ".gitignore",
+        ".zenodo.json",
+        "CARD.md",
+        "CITATION.cff",
+        "NOTICE",
+        "build.toml",
+        "flake.nix",
+        "pyproject.toml",
+        "scripts/hf_mirror_release.py",
+        "scripts/render_model_card.py",
+        "torch-ext/szl_maskmod/__init__.py",
+        "torch-ext/szl_maskmod/_chain.py",
+        "torch-ext/szl_maskmod/_masks.py",
+        "torch-ext/szl_maskmod/_ops.py"
+      ],
+      "$why_replace": "GitHub is the source of truth for code. These exact paths are the GitHub-owned files the release payload stages. When a Hub copy differs, the release may update it, and every replacement is printed with before and after sha256 and listed in the receipt. At Hub main 654a01aa, build.toml and torch-ext/szl_maskmod/__init__.py differ; the strict lambda-gate rule would fail closed on them. Any other staged path that collides with different Hub bytes still fails closed. The mirror never deletes a file.",
+      "$why_no_push_lane": "hub-sync propagates deletions. This Hub repo holds files that are not in the GitHub tree (bench and operational receipts, the CycloneDX BOM, maskmod.py, og-card.png and the Hub test). Mirroring runs only on release and only adds or updates files. The card is loaded from the Hub, so its curated front matter survives.",
+      "hub_only_paths": [
+        ".gitattributes",
+        "BENCH.laptop-blackwell.json",
+        "OPERATIONAL.json",
+        "bom/",
+        "maskmod.py",
+        "og-card.png",
+        "tests/"
+      ]
     }
   ]
 }
