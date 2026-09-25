@@ -2,11 +2,20 @@
 # Copyright 2026 SZL Holdings
 """Original score_mod + block-mask attention. Not copied from flex_attention.py."""
 from __future__ import annotations
+import hashlib
 from typing import Callable, Optional
 import torch
 from ._chain import ReceiptChain
 
 ScoreMod = Callable[[torch.Tensor, torch.Tensor, torch.Tensor], torch.Tensor]
+
+def _block_mask_identity(block_mask: Optional[torch.Tensor]) -> str:
+    if block_mask is None:
+        return "none"
+    canonical = block_mask.detach().to(device="cpu", dtype=torch.bool).contiguous()
+    shape = "x".join(str(int(dim)) for dim in canonical.shape)
+    payload = bytes(canonical.view(-1).to(torch.uint8).tolist())
+    return f"shape={shape};sha256={hashlib.sha256(payload).hexdigest()}"
 
 def _dense_attn(q, k, v, *, causal, score_mod, block_mask, scale):
     b, h, tq, d = q.shape
@@ -36,7 +45,7 @@ def maskmod_attn(
     y = _dense_attn(q, k, v, causal=causal, score_mod=score_mod, block_mask=block_mask, scale=scale)
     if chain is not None:
         mid = "none" if score_mod is None else getattr(score_mod, "__name__", type(score_mod).__name__)
-        bdigest = "none" if block_mask is None else f"sum={float(block_mask.to(torch.float32).sum().item()):.6g}"
+        bdigest = _block_mask_identity(block_mask)
         chain.emit({"op": "maskmod_attn", "score_mod": mid, "block_mask": bdigest,
                     "causal": causal, "q_shape": list(q.shape), "lambda": "Conjecture 1"})
     return y
