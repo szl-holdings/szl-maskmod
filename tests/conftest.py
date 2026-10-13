@@ -1,5 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Load KERNEL package: get_kernel when available, else torch-ext."""
+"""Load the KERNEL package from this checkout's torch-ext/ (the GitHub source).
+
+Tests always exercise the source under review. What the Hub serves is checked
+separately by hf-kernel-publish's verify job, through get_kernel(version=1).
+"""
 from __future__ import annotations
 
 import sys
@@ -14,14 +18,12 @@ if str(EXT) not in sys.path:
 
 
 def load_kernel():
-    try:
-        from kernels import get_kernel
+    import szl_maskmod
 
-        return get_kernel("SZLHOLDINGS/szl-maskmod", revision="main", trust_remote_code=True)
-    except Exception:
-        import szl_maskmod
-
-        return szl_maskmod
+    loaded = Path(szl_maskmod.__file__).resolve().parent
+    if loaded != (EXT / "szl_maskmod").resolve():
+        raise RuntimeError(f"szl_maskmod imported from {loaded}, not this checkout's torch-ext")
+    return szl_maskmod
 
 
 @pytest.fixture(scope="module")

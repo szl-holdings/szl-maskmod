@@ -16,10 +16,31 @@ GitHub bytes are the artifact. Hugging Face Hub is a publish mirror.
 [Product](https://a-11-oy.com) · [Proof](https://a11oy.net) · [GitHub organization](https://github.com/szl-holdings)
 <!-- /szl:header -->
 
+## Kernel Hub publication
+
+`.github/workflows/hf-kernel-publish.yml` is the only writer of
+[`kernels/SZLHOLDINGS/szl-maskmod`](https://huggingface.co/kernels/SZLHOLDINGS/szl-maskmod).
+On a published release, or a dispatch from `main`, it builds `build/torch-cpu` and
+`build/torch-universal` from `torch-ext/szl_maskmod` at the source commit, pushes them to the
+kernel repo's `main` and `v1` branches (fast-forward only), and then checks in a fresh job that
+`get_kernel(..., version=1)` serves exactly those bytes. Only after that does it turn the model
+repo `SZLHOLDINGS/szl-maskmod` into a pointer card. A weekly job re-verifies what the Hub serves.
+`SZL_KERNEL_SOURCE.json` on the kernel repo names the GitHub commit of each build.
+
+Stable API channel:
+
+```python
+from kernels import get_kernel
+
+km = get_kernel("SZLHOLDINGS/szl-maskmod", version=1, trust_remote_code=True)
+```
+
+For a reviewed production pin, set `SZL_MASKMOD_HF_REVISION` to an immutable **Kernel Hub**
+commit (for example the `v1` head named in a verified `hf-kernel-publish` run).
 Set `SZL_MASKMOD_HF_REVISION` to the immutable **first-class Kernel Hub** commit
 from a verified publication of [`kernels/SZLHOLDINGS/szl-maskmod`](https://huggingface.co/kernels/SZLHOLDINGS/szl-maskmod). Use the `kernels`
 client version qualified with that publication. The GitHub source commit,
-model-type mirror commit, and Kernel Hub commit are separate identities.
+model-repo commit, and Kernel Hub commit are separate identities.
 An observed head, a branch name, or a successful import does not qualify a release.
 
 `trust_remote_code=True` permits execution of the selected repository's Python.
