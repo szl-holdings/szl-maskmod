@@ -19,11 +19,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# The committed release mirror (.github/hf-mirror.json): the workflow binds the
-# credential, the publisher uploads and tags. Nothing else writes to the Hub.
+# The canonical kernel publisher (.github/hf-kernels.json): the workflow binds the
+# credential, the script pushes the kernel repo and the model-twin pointer over
+# fast-forward Git. Nothing else writes to the Hub.
 WRITERS = frozenset({
-    ".github/workflows/hf-mirror.yml",
-    "scripts/hf_mirror_release.py",
+    ".github/workflows/hf-kernel-publish.yml",
+    "scripts/szl_kernel_publish.py",
 })
 
 # Executable sources only. Tests, docs and data corpora are not writers.
@@ -41,6 +42,8 @@ HUB_WRITE = re.compile(
     r"|repo-files\s+delete|tag\s+create)\b"
     r"|huggingface/hub-sync@"
     r"|git\s+(?:push|remote\s+add)[^\n]*huggingface\.co"
+    # git driven from Python with argument lists, e.g. run("push", ...) or git(root, "push", ...)
+    r"|\b(?:run|git|check_call|check_output|Popen)\([^\n]*[\"'](?:push|send-pack)[\"']\s*[,)]"
 )
 HF_SECRET = re.compile(r"secrets\.(?:HF_[A-Z0-9_]*|HUGGING[A-Z0-9_]*)\b")
 
@@ -92,6 +95,8 @@ class HubSingleWriter(unittest.TestCase):
             "hf upload SZLHOLDINGS/x .",
             "uses: huggingface/hub-sync@fdffea8e04104d0bd4e3181c5feb3025f0433ff5",
             "git push https://user:tok@huggingface.co/SZLHOLDINGS/x main",
+            'self.run("push", "--porcelain", "origin", *refspecs)',
+            'subprocess.run(["git", "push", url, "HEAD:main"])',
         ):
             self.assertRegex(sample, HUB_WRITE)
         self.assertRegex("HF_TOKEN: ${{ secrets.HF_TOKEN || secrets.HF_ORG_TOKEN }}", HF_SECRET)
