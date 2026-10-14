@@ -1,6 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 SZL Holdings
-"""Original score_mod + block-mask attention. Not copied from flex_attention.py."""
+"""Original score_mod + block-mask attention. Not copied from flex_attention.py.
+
+Semantics: the causal flag and ``block_mask`` (a boolean keep-mask) are hard
+constraints. ``score_mod`` may rescale or bias kept scores, but every excluded
+position is forced back to ``-inf`` after the callback, so its attention weight
+is exactly 0. A fully excluded query row yields a zero output row.
+"""
 from __future__ import annotations
 import hashlib
 from typing import Callable, Optional
@@ -24,12 +30,21 @@ def _dense_attn(q, k, v, *, causal, score_mod, block_mask, scale):
     scores = torch.matmul(q, k.transpose(-2, -1)) * sm
     q_idx = torch.arange(tq, device=q.device)[:, None]
     k_idx = torch.arange(tkv, device=q.device)[None, :]
+    excluded = None
     if causal:
-        scores = scores.masked_fill(q_idx < k_idx, float("-inf"))
+        excluded = q_idx < k_idx
     if block_mask is not None:
-        scores = scores.masked_fill(~block_mask, float("-inf"))
+        drop = ~block_mask.to(device=q.device, dtype=torch.bool)
+        excluded = drop if excluded is None else (excluded | drop)
+    if excluded is not None:
+        scores = scores.masked_fill(excluded, float("-inf"))
     if score_mod is not None:
         scores = score_mod(scores, q_idx, k_idx)
+        # Keep-masks are hard constraints (0.2.0): re-apply the exclusion after the
+        # callback so a score_mod that returns finite (or NaN) scores at masked
+        # positions can never restore attention there.
+        if excluded is not None:
+            scores = scores.masked_fill(excluded, float("-inf"))
     p = torch.softmax(scores, dim=-1)
     p = torch.nan_to_num(p, nan=0.0)
     return torch.matmul(p, v)
