@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 SZL Holdings
 from __future__ import annotations
+import copy
 import hashlib, json
 from typing import Any, List, Optional, Tuple
 
@@ -17,7 +18,8 @@ class ReceiptChain:
         self._rows: List[dict] = []
     def emit(self, payload: dict) -> str:
         prev = self._rows[-1]["digest"] if self._rows else GENESIS
-        body = dict(payload); body["seq"] = len(self._rows); body["prev"] = prev
+        # Retain owned values so caller mutation cannot rewrite hashed history.
+        body = copy.deepcopy(dict(payload)); body["seq"] = len(self._rows); body["prev"] = prev
         digest = _sha3(_canon(body))
         self._rows.append({**body, "digest": digest})
         return digest
