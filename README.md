@@ -16,6 +16,18 @@ GitHub bytes are the artifact. Hugging Face Hub is a publish mirror.
 [Product](https://a-11-oy.com) · [Proof](https://a11oy.net) · [GitHub organization](https://github.com/szl-holdings)
 <!-- /szl:header -->
 
+<!-- SZL-KERNEL-STATUS:import-LIVE:START -->
+## Status
+
+> **STATUS: import-LIVE** on CPU (source-tree / Kernel Hub `get_kernel`). Triton fused path is **UNAVAILABLE**.
+
+| Thing | Label | Method / N / date / what-NOT |
+|---|---|---|
+| CPU import / `selfcheck` | **import-LIVE** | Local source-tree import + `selfcheck` ok on 2026-11-04 (HQ; torch 2.14.1; CUDA false). `chain_ok=true`, `max_abs_vs_sdpa_causal=2.38e-07`. What-NOT: no tokens/s; no joules; not a Hub immutable-pin qualification. |
+| Triton fused kernel | **UNAVAILABLE** | Not claimed LIVE. No cubin and no timed GPU run. |
+
+<!-- SZL-KERNEL-STATUS:import-LIVE:END -->
+
 ## Kernel Hub publication
 
 `.github/workflows/hf-kernel-publish.yml` is the only writer of
