@@ -18,11 +18,22 @@ Original SZL score_mod + block-mask attention (FlexAttention silhouette).
 Inspired by Dong et al. https://arxiv.org/abs/2412.05496.
 Not PyTorch flex_attention.py. No CuTeDSL. No speedup claim.
 Doctrine v11. Λ = Conjecture 1 OPEN. Apache-2.0. Copyright 2026 SZL Holdings.
+Credit Stephen Lutar. Silhouette of FlexAttention score_mod/mask_mod (leaders tweak map) — not a rehost.
 
 Pure-Python (noarch) kernel published from GitHub
 [szl-holdings/szl-maskmod](https://github.com/szl-holdings/szl-maskmod) by its
 `hf-kernel-publish` workflow. GitHub is the source of truth; this kernel repository
 is written only by that workflow, and this card is published from `CARD.md` there.
+
+## Status (honesty)
+
+> **STATUS: import-LIVE** on CPU (source-tree / Kernel Hub `get_kernel`).
+> Triton fused path is **UNAVAILABLE**. No speedup claim.
+
+| Thing | Label | Method / what-NOT |
+|---|---|---|
+| CPU import / `selfcheck` | **import-LIVE** | Local source-tree import + `selfcheck` ok on 2026-11-04 (HQ; torch 2.14.1; CUDA false). `chain_ok=true`, `max_abs_vs_sdpa_causal=2.38e-07`. What-NOT: no tokens/s; no joules; not a Hub immutable-pin qualification. |
+| Triton fused kernel | **UNAVAILABLE** | Not claimed LIVE. No cubin and no timed GPU run on this surface. |
 
 ## Load it
 
