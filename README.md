@@ -104,3 +104,9 @@ print(selfcheck())
 
 Not a FlexAttention rehost. No CUDA benches. No speedup claim.
 Doctrine v11. Λ = Conjecture 1 OPEN.
+
+Estate on Hugging Face: models, datasets and Spaces are published under the [SZLHOLDINGS](https://huggingface.co/SZLHOLDINGS) org.
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE).
