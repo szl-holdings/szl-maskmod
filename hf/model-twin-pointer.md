@@ -2,7 +2,6 @@
 license: apache-2.0
 thumbnail: {{MODEL_TWIN_URL}}/resolve/main/og-card.png
 tags:
-  - kernel
   - szl-holdings
 ---
 
